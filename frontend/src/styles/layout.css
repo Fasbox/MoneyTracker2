@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-4);
+}
+
+.section {
+  margin-bottom: var(--sp-8);
+}
+
+.grid {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+/* Desktop: dos columnas para bloques principales */
+@media (min-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}

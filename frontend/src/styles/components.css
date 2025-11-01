@@ -1,0 +1,86 @@
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--sp-5);
+}
+
+/* Listas */
+.list { list-style: none; padding: 0; margin: 0; }
+.list-item {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px dashed var(--border);
+}
+.list-item:last-child { border-bottom: 0; }
+.list-item__meta { color: var(--muted); font-size: var(--fs-1); }
+
+/* Botones */
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  padding: .55rem .9rem; border-radius: 10px;
+  background: #1f2433; color: var(--text);
+  transition: transform .02s ease, filter .15s ease;
+  border: 1px solid var(--border);
+}
+.btn:hover { filter: brightness(1.05); }
+.btn:active { transform: translateY(1px); }
+
+.btn--primary { background: var(--brand); color: var(--brand-ink); border-color: transparent; }
+.btn--danger  { background: #2a1214; color: #fca5a5; border-color: #651b1e; }
+.btn--ghost   { background: transparent; }
+
+/* Formularios */
+.form { display: grid; gap: var(--sp-3); }
+.field-row {
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .field-row { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.input, .select {
+  width: 100%;
+  padding: .55rem .7rem;
+  color: var(--text);
+  background: #0c1324;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.label { font-size: var(--fs-1); color: var(--muted); margin-bottom: .25rem; display: block; }
+.actions { display: flex; gap: var(--sp-3); align-items: center; }
+
+/* --- Simple top navigation (tabs) --- */
+.topnav {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-4);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.topnav__link {
+  font-weight: 600;
+  text-decoration: none;
+  padding: .5rem .75rem;
+  border-radius: 10px;
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+
+.topnav__link:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.topnav__link.is-active {
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border);
+}

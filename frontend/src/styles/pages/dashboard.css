@@ -1,0 +1,15 @@
+.dash-header {
+  display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center;
+  justify-content: space-between; margin-bottom: var(--sp-4);
+}
+.month-picker { min-width: 180px; }
+
+.block-title { font-size: var(--fs-4); margin-bottom: var(--sp-4); }
+
+.fixed-item__name { font-weight: 600; }
+.fixed-item__amount { color: var(--muted); }
+.fixed-item__due { color: var(--muted); font-size: var(--fs-1); }
+
+.summary-list { display: grid; gap: var(--sp-2); }
+.summary-list li { display: flex; justify-content: space-between; }
+.summary-list b { color: var(--text); }

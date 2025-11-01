@@ -1,0 +1,8 @@
+/* src/index.css */
+@import "./styles/_variables.css";
+@import "./styles/base.css";
+@import "./styles/layout.css";
+@import "./styles/components.css";
+
+/* Páginas */
+@import "./styles/pages/dashboard.css";

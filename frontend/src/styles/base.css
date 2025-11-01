@@ -1,0 +1,25 @@
+/* Reset suave */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-2);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1,h2,h3 { margin: 0 0 var(--sp-4); line-height: 1.2; }
+p { margin: 0 0 var(--sp-3); color: var(--muted); }
+hr { border: 0; border-top: 1px solid var(--border); margin: var(--sp-6) 0; }
+
+/* A11y focus */
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Utilidades pequeñas */
+.text-muted { color: var(--muted); }
+.text-strong { font-weight: 600; }
+.mt-4 { margin-top: var(--sp-4); }
+.mt-6 { margin-top: var(--sp-6); }
+.mb-4 { margin-bottom: var(--sp-4); }
