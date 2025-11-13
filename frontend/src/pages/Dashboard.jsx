@@ -116,10 +116,10 @@ export default function Dashboard() {
           {summary ? (
             <ul className="summary-list">
               <li><span>Salario base</span><b>{fmtCOP(summary.base_salary)} COP</b></li>
-              <li><span>% ahorro</span><b>{Math.round(summary.saving_rate*100)}%</b></li>
               <li><span>Ingresos extra</span><b>{fmtCOP(summary.extra_income)} COP</b></li>
               <li><span>Gastos variables</span><b>{fmtCOP(summary.variable_expense)} COP</b></li>
               <li><span>Fijos pagados</span><b>{fmtCOP(summary.fixed_paid)} COP</b></li>
+              <li><span>% ahorro</span><b>{Math.round(summary.saving_rate*100)}%</b></li>
               <li><span>Ahorro objetivo</span><b>{fmtCOP(summary.saving_target)} COP</b></li>
               <li><span>Saldo restante</span><b>{fmtCOP(summary.remaining)} COP</b></li>
             </ul>

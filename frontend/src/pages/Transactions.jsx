@@ -16,26 +16,25 @@ export default function Transactions() {
   const { session } = useAuth();
   const token = session?.access_token;
 
-  // form nuevo gasto
+  // --- Form "Nueva transacción" ---
   const [expAmount, setExpAmount] = useState('');
   const [expDesc, setExpDesc] = useState('');
   const [expDate, setExpDate] = useState(new Date().toISOString().slice(0, 10));
+  const [txnType, setTxnType] = useState('expense'); // 'expense' | 'income'
 
-  // categorías
+  // Categorías
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState('');
   const [categoryName, setCategoryName] = useState('');
-  const [txnType, setTxnType] = useState('expense'); // 'expense' | 'income'
 
-
-  // filtros de listado
+  // --- Filtros del listado ---
   const [from, setFrom] = useState(firstDayOfMonth());
   const [to, setTo] = useState(lastDayOfMonth());
   const [fltCat, setFltCat] = useState('');
-  const [fltType, setFltType] = useState('expense'); // por defecto gastos
+  const [fltType, setFltType] = useState('todos'); // 'todos' | 'expense' | 'income'
   const [fltQ, setFltQ] = useState('');
 
-  // datos del listado + paginación
+  // --- Listado + paginación ---
   const [rows, setRows] = useState([]);
   const [nextCursor, setNextCursor] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -46,20 +45,18 @@ export default function Transactions() {
     return m;
   }, [categories]);
 
-  // cargar categorías
+  // Cargar categorías
   useEffect(() => {
     if (!token) return;
     (async () => {
       try {
-        const res = await fetch(`${API}/categories`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await fetch(`${API}/categories`, { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) setCategories(await res.json());
       } catch {}
     })();
   }, [token]);
 
-  // carga inicial del listado
+  // Cargar listado con filtros
   useEffect(() => {
     if (!token) return;
     (async () => {
@@ -70,7 +67,7 @@ export default function Transactions() {
         if (from) url.searchParams.set('from', from);
         if (to) url.searchParams.set('to', to);
         if (fltCat) url.searchParams.set('category_id', fltCat);
-        if (fltType) url.searchParams.set('type', fltType);
+        if (fltType && fltType !== 'todos') url.searchParams.set('type', fltType);
         if (fltQ) url.searchParams.set('q', fltQ);
 
         const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -89,7 +86,7 @@ export default function Transactions() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, from, to, fltCat, fltType, fltQ]);
 
-  // cargar más (paginación)
+  // Paginación
   async function loadMore() {
     if (!token || !nextCursor) return;
     setLoading(true);
@@ -100,7 +97,7 @@ export default function Transactions() {
       if (from) url.searchParams.set('from', from);
       if (to) url.searchParams.set('to', to);
       if (fltCat) url.searchParams.set('category_id', fltCat);
-      if (fltType) url.searchParams.set('type', fltType);
+      if (fltType && fltType !== 'todos') url.searchParams.set('type', fltType);
       if (fltQ) url.searchParams.set('q', fltQ);
 
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -115,7 +112,7 @@ export default function Transactions() {
     }
   }
 
-  // crear gasto (igual que antes, con categoría opcional o nueva)
+  // Crear transacción
   async function submitExpense(e) {
     e.preventDefault();
     if (!token) return;
@@ -124,9 +121,9 @@ export default function Transactions() {
       amount: Number(expAmount),
       description: expDesc,
       occurred_at: expDate,
-      type: txnType,                         // <-- ¡clave!
-      category_id: categoryId || null,       // si escogiste del select
-      category_name: categoryName || ''      // o si escribiste una nueva
+      type: txnType,                   // <- importante
+      category_id: categoryId || null,
+      category_name: categoryName || ''
     };
 
     const res = await fetch(`${API}/expenses`, {
@@ -136,17 +133,25 @@ export default function Transactions() {
     });
 
     if (!res.ok) {
-      const err = await res.json().catch(()=> ({}));
+      const err = await res.json().catch(() => ({}));
       return alert('Error creando transacción: ' + (err.error || res.status));
     }
 
+    // limpiar form
     setExpAmount('');
     setExpDesc('');
     setCategoryId('');
     setCategoryName('');
+
     alert(txnType === 'income' ? 'Ingreso creado' : 'Gasto creado');
   }
 
+  // Conveniencia: si eliges la categoría "Ingresos", cambiamos el tipo a income
+  useEffect(() => {
+    if (!categoryId) return;
+    const sel = categories.find(c => String(c.id) === String(categoryId));
+    if (sel && (sel.name || '').toLowerCase() === 'ingresos') setTxnType('income');
+  }, [categoryId, categories]);
 
   return (
     <div className="container">
@@ -161,16 +166,17 @@ export default function Transactions() {
           <div className="field-row">
             <div>
               <label className="label">Desde</label>
-              <input className="input" type="date" value={from} onChange={e=>setFrom(e.target.value)} />
+              <input className="input" type="date" value={from} onChange={e => setFrom(e.target.value)} />
             </div>
             <div>
               <label className="label">Hasta</label>
-              <input className="input" type="date" value={to} onChange={e=>setTo(e.target.value)} />
+              <input className="input" type="date" value={to} onChange={e => setTo(e.target.value)} />
             </div>
             <div>
               <label className="label">Tipo</label>
-              <select className="select" value={fltType} onChange={e=>setTxnType(e.target.value)}>
-                <option value="">Todos</option>
+              {/* FIX: usar fltType + setFltType */}
+              <select className="select" value={fltType} onChange={e => setFltType(e.target.value)}>
+                <option value="todos">Todos</option>
                 <option value="expense">Gastos</option>
                 <option value="income">Ingresos</option>
               </select>
@@ -180,16 +186,23 @@ export default function Transactions() {
           <div className="field-row">
             <div>
               <label className="label">Categoría</label>
-              <select className="select" value={fltCat} onChange={e=>setFltCat(e.target.value)}>
+              <select className="select" value={fltCat} onChange={e => setFltCat(e.target.value)}>
                 <option value="">Todas</option>
                 {categories.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}{c.user_id ? '' : ' (global)'}</option>
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.user_id ? '' : ' (global)'}
+                  </option>
                 ))}
               </select>
             </div>
             <div style={{ gridColumn: 'span 2' }}>
               <label className="label">Buscar</label>
-              <input className="input" value={fltQ} onChange={e=>setFltQ(e.target.value)} placeholder="Descripción contiene…" />
+              <input
+                className="input"
+                value={fltQ}
+                onChange={e => setFltQ(e.target.value)}
+                placeholder="Descripción contiene…"
+              />
             </div>
           </div>
         </form>
@@ -226,31 +239,50 @@ export default function Transactions() {
         )}
       </div>
 
-      {/* NUEVO GASTO ÚNICO */}
+      {/* NUEVA TRANSACCIÓN */}
       <div className="section card">
         <h3 className="block-title">Agregar gasto único</h3>
         <form className="form" onSubmit={submitExpense}>
           <div className="field-row">
             <div>
               <label className="label">Monto</label>
-              <input className="input" type="number" step="0.01"
-                     value={expAmount} onChange={e=>setExpAmount(e.target.value)} required />
+              <input
+                className="input"
+                type="number"
+                step="0.01"
+                value={expAmount}
+                onChange={e => setExpAmount(e.target.value)}
+                required
+              />
             </div>
+
             <div>
               <label className="label">Descripción</label>
-              <input className="input" value={expDesc} onChange={e=>setExpDesc(e.target.value)} />
+              <input className="input" value={expDesc} onChange={e => setExpDesc(e.target.value)} />
             </div>
+
             <div>
               <label className="label">Fecha</label>
-              <input className="input" type="date" value={expDate} onChange={e=>setExpDate(e.target.value)} />
+              <input className="input" type="date" value={expDate} onChange={e => setExpDate(e.target.value)} />
             </div>
           </div>
 
           <div className="field-row">
             <div>
+              <label className="label">Tipo</label>
+              <select className="select" value={txnType} onChange={e => setTxnType(e.target.value)}>
+                <option value="expense">Gasto</option>
+                <option value="income">Ingreso</option>
+              </select>
+            </div>
+
+            <div>
               <label className="label">Categoría</label>
-              <select className="select" value={categoryId}
-                      onChange={e => { setCategoryId(e.target.value); setCategoryName(''); }}>
+              <select
+                className="select"
+                value={categoryId}
+                onChange={e => { setCategoryId(e.target.value); setCategoryName(''); }}
+              >
                 <option value="">— Selecciona —</option>
                 {categories.map(c => (
                   <option key={c.id} value={c.id}>
@@ -259,16 +291,20 @@ export default function Transactions() {
                 ))}
               </select>
             </div>
-            <div style={{ gridColumn: 'span 2' }}>
+
+            <div>
               <label className="label">o crea una nueva</label>
-              <input className="input" placeholder="Nueva categoría (opcional)"
-                     value={categoryName}
-                     onChange={e => { setCategoryName(e.target.value); setCategoryId(''); }} />
+              <input
+                className="input"
+                placeholder="Nueva categoría (opcional)"
+                value={categoryName}
+                onChange={e => { setCategoryName(e.target.value); setCategoryId(''); }}
+              />
             </div>
           </div>
 
           <div className="actions mt-4">
-            <button className="btn btn--primary">Crear gasto</button>
+            <button className="btn btn--primary">Crear</button>
           </div>
         </form>
       </div>
